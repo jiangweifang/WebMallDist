@@ -12,9 +12,9 @@ function delColorGroup(obj) {
     $(obj).parent().fadeOut("fast", function () {
         //获取同级的所有其他组件进行重组
         var allInput = jQuery(this).siblings('div.form-group');
-        //循环遍历组件
+        //循环遍历组件-
         allInput.each(function (i, e) {
-            //重组之前销毁select2
+            //重组之前销毁select2:
             $(e).find("select")
                 .select2("destroy")
                 .removeAttr("data-select2-id tabindex aria-hidden");
@@ -39,9 +39,10 @@ function colorChecked(isLoad) {
     allColorCbx.each(function (i, e) {
         if ($(e).prop('checked')) {
             var colorSelect = $(e).parent().next().children("select");
+            var colorName = colorSelect.find("option:selected").text();
             var colorObj = new Object();
             colorObj.val = colorSelect.val();
-            colorObj.name = colorSelect.find("option:selected").text();
+            colorObj.name = colorName.split(':')[1];
             if (colorObj.val >= 0) {
                 colorArray[i] = colorObj;
             }
@@ -72,8 +73,8 @@ function sizeChecked(isLoad) {
     var allSizeCbx = $('#sizeInfoTab input[type=checkbox]:checked');
     allSizeCbx.each(function (i, e) {
         var sizeObj = new Object();
-        sizeObj.val = $(e).siblings('input[type=hidden]').val();
-        sizeObj.name = $(e).siblings('label').text().trim();
+        sizeObj.val = $(e).attr('sizeId');
+        sizeObj.name = $(e).attr('sizeName');
         sizeArray[i] = sizeObj;
     });
     if (!isLoad) {
@@ -110,7 +111,11 @@ function arrayTable(colorArr, sizeArr) {
                 tableHtml += sizeArr[i].name;
                 tableHtml += '<input type="hidden" value="' + colorElement.val + '" id="SkuInfoList_' + skuNum + '__ColorId" name="SkuInfoList[' + skuNum + '].ColorId" />';
                 tableHtml += '<input type="hidden" value="' + sizeArr[i].val + '" id="SkuInfoList_' + skuNum + '__SizeId" name="SkuInfoList[' + skuNum + '].SizeId" />';
-                tableHtml += '<input type="hidden" value="' + colorElement.name + '|' + sizeArr[i].name + '" id="SkuInfoList_' + skuNum + '__SkuName" name="SkuInfoList[' + skuNum + '].SkuName" />';
+                if (sizeArr[i].name == null || sizeArr[i].name == undefined || sizeArr[i].name == "") {
+                    tableHtml += '<input type="hidden" value="' + colorElement.name + '" id="SkuInfoList_' + skuNum + '__SkuName" name="SkuInfoList[' + skuNum + '].SkuName" />';
+                } else {
+                    tableHtml += '<input type="hidden" value="' + colorElement.name + ':' + sizeArr[i].name + '" id="SkuInfoList_' + skuNum + '__SkuName" name="SkuInfoList[' + skuNum + '].SkuName" />';
+                }
                 tableHtml += '</td>';
                 tableHtml += '<td>';
                 tableHtml += '<input type="number" class="form-control txtSkuPrice" id="SkuInfoList_' + skuNum + '__SkuPrice" name="SkuInfoList[' + skuNum + '].SkuPrice" />';
