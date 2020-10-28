@@ -120,13 +120,13 @@ function arrayTable(colorArr, sizeArr) {
                 }
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="number" class="form-control skuPrice" id="SkuInfoList_' + skuNum + '__SkuPrice" name="SkuInfoList[' + skuNum + '].SkuPrice" data-key-id="' + colorElement.val + '_' + sizeArr[i].val+'" />';
+                tableHtml += '<input type="number" class="form-control skuPrice" id="SkuInfoList_' + skuNum + '__SkuPrice" name="SkuInfoList[' + skuNum + '].SkuPrice" data-key-id="skuPrice_' + colorElement.val + '_' + sizeArr[i].val+'" />';
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="text" class="form-control skuBarcode" id="SkuInfoList_' + skuNum + '__BarCode" name="SkuInfoList[' + skuNum + '].BarCode" data-key-id="' + colorElement.val + '_' + sizeArr[i].val +'" />';
+                tableHtml += '<input type="text" class="form-control skuBarcode" id="SkuInfoList_' + skuNum + '__BarCode" name="SkuInfoList[' + skuNum + '].BarCode" data-key-id="skuBarcode_' + colorElement.val + '_' + sizeArr[i].val +'" />';
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="number" class="form-control skuSort" id="SkuInfoList_' + skuNum + '__Sort" name="SkuInfoList[' + skuNum + '].Sort" data-key-id="' + colorElement.val + '_' + sizeArr[i].val +'" />';
+                tableHtml += '<input type="number" class="form-control skuSort" id="SkuInfoList_' + skuNum + '__Sort" name="SkuInfoList[' + skuNum + '].Sort" data-key-id="skuSort_' + colorElement.val + '_' + sizeArr[i].val +'" />';
                 tableHtml += '</td>';
                 tableHtml += '</tr>';
                 skuNum++;
@@ -327,44 +327,32 @@ function loadColorValidate() {
  * */
 window.pageLoadSkuAttr = function pageLoadSkuAttr() {
     $("#skuInfoTable .skuPrice").each(function (i, e) {
-        var data_id = $(e).attr("data-key-id");
-        var input_id = $(e).attr("id");
-        var key = input_id + data_id;
+        var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
     $("#skuInfoTable .skuBarcode").each(function (i, e) {
-        var data_id = $(e).attr("data-key-id");
-        var input_id = $(e).attr("id");
-        var key = input_id + data_id;
+        var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
     $("#skuInfoTable .skuSort").each(function (i, e) {
-        var data_id = $(e).attr("data-key-id");
-        var input_id = $(e).attr("id");
-        var key = input_id + data_id;
+        var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
 }
 
 function getSkuAttr() {
     $("#skuInfoTable .skuPrice").each(function (i, e) {
-        var data_id = $(e).attr("data-key-id");
-        var input_id = $(e).attr("id");
-        var key = input_id + data_id;
+        var key = $(e).attr("data-key-id");
         var value = localStorage.getItem(key);
         $(e).val(value);
     });
     $("#skuInfoTable .skuBarcode").each(function (i, e) {
-        var data_id = $(e).attr("data-key-id");
-        var input_id = $(e).attr("id");
-        var key = input_id + data_id;
+        var key = $(e).attr("data-key-id");
         var value = localStorage.getItem(key);
         $(e).val(value);
     });
     $("#skuInfoTable .skuSort").each(function (i, e) {
-        var data_id = $(e).attr("data-key-id");
-        var input_id = $(e).attr("id");
-        var key = input_id + data_id;
+        var key = $(e).attr("data-key-id");
         var value = localStorage.getItem(key);
         $(e).val(value);
     });
@@ -375,9 +363,7 @@ function getSkuAttr() {
  * @param {any} obj
  */
 window.setSkuAttr = function setSkuAttr(obj) {
-    var data_id = $(obj).attr("data-key-id");
-    var input_id = $(obj).attr("id");
-    var key = input_id + data_id;
+    var key = $(obj).attr("data-key-id");
     localStorage.setItem(key, $(obj).val());
 }
 
