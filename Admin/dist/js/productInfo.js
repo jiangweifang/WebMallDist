@@ -406,9 +406,17 @@ window.setSkuAttr = function setSkuAttr(obj) {
 
 window.skuSizeTab = function skuSizeTab() {
     $("#sku-size-tab li a").on("click", function (e) {
-        if (confirm("切换尺码分组将会丢失勾选的尺码及 sku 数据，确定切换？")) {
-            $('#sizeInfoTab input[type=checkbox]:checked').prop('checked', false);
-            sizeChecked(false);
+        var sizeActive = $('#sizeInfoTab .active input[type=checkbox]:checked');
+        if (sizeActive.length > 0) {
+            if (confirm("切换尺码分组将会丢失勾选的尺码及 sku 数据，确定切换？")) {
+                $('#sizeInfoTab input[type=checkbox]:checked').prop('checked', false);
+                sizeChecked(false);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     });
 } 
