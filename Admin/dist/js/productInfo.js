@@ -38,12 +38,15 @@ function colorChecked(isLoad) {
     var allColorCbx = $('.skuColorInfo').find(".cbxColor");
     var arrIndex = 0;
     allColorCbx.each(function (i, e) {
-        if ($(e).prop('checked')) {
-            var colorSelect = $(e).parent().next().children("select");
+        if ($(e).attr('checked')) {
+            var colorSelect = $(e).parent().next().children(".selColorVal");
             var colorName = colorSelect.find("option:selected").text();
+            
+            //组合颜色进入数组
             var colorObj = new Object();
-            colorObj.val = colorSelect.val();
+            colorObj.val = Number(colorSelect.val());
             colorObj.name = colorName.split(':')[1];
+
             if (colorObj.val >= 0) {
                 colorArray[arrIndex] = colorObj;
                 arrIndex++;
@@ -63,7 +66,16 @@ function colorChecked(isLoad) {
 function optionSelected(obj) {
     //在选择颜色后重置复选框
     $(obj).parent().prev().children("input[type=checkbox]").prop('checked', false);
+    var value = $(obj).val();
+    $('.selColorVal').each(function (i, e) {
+        if (obj != e && value == $(e).val()) {
+            alert('不能选择相同的颜色!');
+            $(obj).val(-1);
+            return false;
+        }
+    });
     colorChecked(false);
+    return true;
 }
 
 /**
@@ -75,7 +87,7 @@ function sizeChecked(isLoad) {
     var allSizeCbx = $('#sizeInfoTab input[type=checkbox]:checked');
     allSizeCbx.each(function (i, e) {
         var sizeObj = new Object();
-        sizeObj.val = $(e).attr('sizeId');
+        sizeObj.val = Number($(e).attr('sizeId'));
         sizeObj.name = $(e).attr('sizeName');
         sizeArray[i] = sizeObj;
     });
@@ -181,16 +193,40 @@ function combination(obj ,index){
     //下拉菜单初始化
     obj.find("select")
         .attr('id', ids + 'ColorId')
-        .attr('name', names + 'ColorId');
+        .attr('name', names + 'ColorId')
+        .val(-1);
     //文件上传框初始化
-    obj.find("input[type=file]")
+    obj.find("input[type=file]").val("")
         .attr('id', ids + 'PicFile')
         .attr('name', names + 'PicFile')
         .next().attr('for', ids + 'PicFile');
+    obj.find("label.custom-file-label").text("选择文件");
     //隐藏表单域初始化
     obj.find('input[type=hidden]')
         .attr('id', ids + 'PicUrl')
         .attr('name', names + 'PicUrl');
+
+    //加入按钮绑定事件
+    //删除按钮
+    obj.find(".delColorGroup").bind("click", function () {
+        window.delColorGroup(this);
+    });
+    //上传按钮
+    obj.find(".uploadFiles").bind("click", function () {
+        window.uploadFiles(this);
+    }).siblings("input[type=hidden]").val("");
+
+    //图片
+    obj.find("img").hide();
+
+    //checkbox改变事件
+    obj.find('.cbxColor').bind("change", function () {
+        colorChecked(false);
+    }).prop('checked', false);
+    obj.find("select").bind("change", function () {
+        return optionSelected(this);
+    });
+    return obj;
 }
 
 /**
@@ -303,6 +339,7 @@ $(function () {
             $(element).removeClass('is-invalid');
         }
     });
+    skuSizeTab();
 });
 
 function loadColorValidate() {
@@ -366,6 +403,15 @@ window.setSkuAttr = function setSkuAttr(obj) {
     var key = $(obj).attr("data-key-id");
     localStorage.setItem(key, $(obj).val());
 }
+
+window.skuSizeTab = function skuSizeTab() {
+    $("#sku-size-tab li a").on("click", function (e) {
+        if (confirm("切换尺码分组将会丢失勾选的尺码及 sku 数据，确定切换？")) {
+            $('#sizeInfoTab input[type=checkbox]:checked').prop('checked', false);
+            sizeChecked(false);
+        }
+    });
+} 
 
 window.delColorGroup = delColorGroup;
 window.colorChecked = colorChecked;
