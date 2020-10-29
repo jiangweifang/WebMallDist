@@ -132,13 +132,13 @@ function arrayTable(colorArr, sizeArr) {
                 }
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="number" class="form-control skuPrice" id="SkuInfoList_' + skuNum + '__SkuPrice" name="SkuInfoList[' + skuNum + '].SkuPrice" data-key-id="skuPrice_' + colorElement.val + '_' + sizeArr[i].val+'" />';
+                tableHtml += '<input type="number" class="form-control skuPrice" min="0" id="SkuInfoList_' + skuNum + '__SkuPrice" name="SkuInfoList[' + skuNum + '].SkuPrice" data-key-id="skuPrice_' + colorElement.val + '_' + sizeArr[i].val+'" />';
                 tableHtml += '</td>';
                 tableHtml += '<td>';
                 tableHtml += '<input type="text" class="form-control skuBarcode" id="SkuInfoList_' + skuNum + '__BarCode" name="SkuInfoList[' + skuNum + '].BarCode" data-key-id="skuBarcode_' + colorElement.val + '_' + sizeArr[i].val +'" />';
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="number" class="form-control skuSort" id="SkuInfoList_' + skuNum + '__Sort" name="SkuInfoList[' + skuNum + '].Sort" data-key-id="skuSort_' + colorElement.val + '_' + sizeArr[i].val +'" />';
+                tableHtml += '<input type="number" class="form-control skuSort" min="0" id="SkuInfoList_' + skuNum + '__Sort" name="SkuInfoList[' + skuNum + '].Sort" data-key-id="skuSort_' + colorElement.val + '_' + sizeArr[i].val +'" />';
                 tableHtml += '</td>';
                 tableHtml += '</tr>';
                 skuNum++;
