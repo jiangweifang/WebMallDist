@@ -279,6 +279,11 @@ $(function () {
                 min: 0.01,
                 number: true
             },
+            MinQty: {
+                required: true,
+                min: 1,
+                number: true
+            },
             prodPicsNum: {
                 required: true,
                 min: 1,
@@ -313,6 +318,11 @@ $(function () {
                 required: "重量不能为空!",
                 min: "重量不能小于或等于0",
                 number: "重量必须是数字",
+            },
+            MinQty: {
+                required: "起订量不能为空!",
+                min: "起订量不能小于或等于0",
+                number: "起订量必须是数字",
             },
             prodPicsNum: {
                 required: "产品图片数量异常!",
