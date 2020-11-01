@@ -291,10 +291,6 @@ $(function () {
             skuInfoNum: {
                 required: true,
                 min: 1,
-            },
-            Description: {
-                required: true,
-                minlength: 10,
             }
         },
         messages: {
@@ -331,10 +327,6 @@ $(function () {
             skuInfoNum: {
                 required: "SKU数量异常!",
                 min: "SKU数量不能少于1,请选择颜色/尺码,组合SKU",
-            },
-            Description: {
-                required: "产品描述不能为空",
-                minlength: "产品描述不能少于10个字符",
             }
         },
         errorElement: 'span',
