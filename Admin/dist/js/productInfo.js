@@ -38,7 +38,7 @@ function colorChecked(isLoad) {
     var allColorCbx = $('.skuColorInfo').find(".cbxColor");
     var arrIndex = 0;
     allColorCbx.each(function (i, e) {
-        if ($(e).attr('checked')) {
+        if ($(e).prop('checked')) {
             var colorSelect = $(e).parent().next().children(".selColorVal");
             var colorName = colorSelect.find("option:selected").text();
             
@@ -373,15 +373,23 @@ function loadColorValidate() {
  * data-key-id: 颜色_尺码
  * */
 window.pageLoadSkuAttr = function pageLoadSkuAttr() {
-    $("#skuInfoTable .skuPrice").each(function (i, e) {
+    var skuPrice = $("#skuInfoTable .skuPrice");
+    var skuBarcode = $("#skuInfoTable .skuBarcode");
+    var skuSort = $("#skuInfoTable .skuSort");
+
+    if (skuPrice.length == 0 || skuBarcode.length == 0 || skuSort.length == 0) {
+        localStorage.clear();
+    }
+
+    skuPrice.each(function (i, e) {
         var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
-    $("#skuInfoTable .skuBarcode").each(function (i, e) {
+    skuBarcode.each(function (i, e) {
         var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
-    $("#skuInfoTable .skuSort").each(function (i, e) {
+    skuSort.each(function (i, e) {
         var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
