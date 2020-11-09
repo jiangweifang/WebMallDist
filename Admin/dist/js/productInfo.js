@@ -20,7 +20,7 @@ function delColorGroup(obj) {
                 .removeAttr("data-select2-id tabindex aria-hidden");
             $(e).find("option").removeAttr("data-select2-id");
             //分配初始化与名称
-            combination($(e),i);
+            recombination($(e), i);
         });
         $(this).find("input[type=checkbox]").prop('checked', false);
         colorChecked();
@@ -41,7 +41,7 @@ function colorChecked(isLoad) {
         if ($(e).prop('checked')) {
             var colorSelect = $(e).parent().next().children(".selColorVal");
             var colorName = colorSelect.find("option:selected").text();
-            
+
             //组合颜色进入数组
             var colorObj = new Object();
             colorObj.val = Number(colorSelect.val());
@@ -91,6 +91,10 @@ function sizeChecked(isLoad) {
         sizeObj.name = $(e).attr('sizeName');
         sizeArray[i] = sizeObj;
     });
+    if (allSizeCbx.length > 0) {
+        var sizePan = allSizeCbx.parents("div[id^='sizeInfo_']").attr("id");
+        $('a#' + sizePan + '_tab').click();
+    }
     if (!isLoad) {
         arrayTable(colorArray, sizeArray);
     }
@@ -103,6 +107,7 @@ function sizeChecked(isLoad) {
  */
 function arrayTable(colorArr, sizeArr) {
     var skuTable = $('#skuInfoTable');
+    var prodId = $("#Id").val();
     skuTable.html("");//触发此function时先对显示内容进行清空
     var tableHtml = "";
     //如果尺码和颜色被选择才会显示
@@ -113,6 +118,11 @@ function arrayTable(colorArr, sizeArr) {
             //是否是第一次循环这个TR
             var isFirstTd = true;
             for (i = 0; i < sizeArr.length; i++) {
+                var key = prodId + "_" + colorElement.val + "_" + sizeArr[i].val;
+                var skuId = localStorage.getItem(key);
+                if (skuId == null || skuId == undefined) {
+                    skuId = "";
+                }
                 tableHtml += '<tr>';
                 //如果第一次循环TR 给TR增加rowspan合并单元格 单元格数量是尺寸数组的长度
                 if (isFirstTd) {
@@ -123,8 +133,11 @@ function arrayTable(colorArr, sizeArr) {
                 }
                 tableHtml += '<td>';
                 tableHtml += sizeArr[i].name;
+                tableHtml += '<input type="hidden" value="' + skuId + '" id="SkuInfoList_' + skuNum + '__SkuId" name="SkuInfoList[' + skuNum + '].SkuId" data-key-id="' + key+'" />';
                 tableHtml += '<input type="hidden" value="' + colorElement.val + '" id="SkuInfoList_' + skuNum + '__ColorId" name="SkuInfoList[' + skuNum + '].ColorId" />';
                 tableHtml += '<input type="hidden" value="' + sizeArr[i].val + '" id="SkuInfoList_' + skuNum + '__SizeId" name="SkuInfoList[' + skuNum + '].SizeId" />';
+                tableHtml += '<input type="hidden" value="' + colorElement.name + '" id="SkuInfoList_' + skuNum + '__ColorName" name="SkuInfoList[' + skuNum + '].ColorName" />';
+                tableHtml += '<input type="hidden" value="' + sizeArr[i].name + '" id="SkuInfoList_' + skuNum + '__SizeName" name="SkuInfoList[' + skuNum + '].SizeName" />';
                 if (sizeArr[i].name == null || sizeArr[i].name == undefined || sizeArr[i].name == "") {
                     tableHtml += '<input type="hidden" value="' + colorElement.name + '" id="SkuInfoList_' + skuNum + '__SkuName" name="SkuInfoList[' + skuNum + '].SkuName" />';
                 } else {
@@ -132,38 +145,46 @@ function arrayTable(colorArr, sizeArr) {
                 }
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="number" class="form-control skuPrice" min="0" id="SkuInfoList_' + skuNum + '__SkuPrice" name="SkuInfoList[' + skuNum + '].SkuPrice" data-key-id="skuPrice_' + colorElement.val + '_' + sizeArr[i].val+'" />';
+                tableHtml += '<input type="number" class="form-control skuPrice" min="0" id="SkuInfoList_' + skuNum + '__SkuPrice" name="SkuInfoList[' + skuNum + '].SkuPrice" data-key-id="skuPrice_' + colorElement.val + '_' + sizeArr[i].val + '" />';
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="text" class="form-control skuBarcode" id="SkuInfoList_' + skuNum + '__BarCode" name="SkuInfoList[' + skuNum + '].BarCode" data-key-id="skuBarcode_' + colorElement.val + '_' + sizeArr[i].val +'" />';
+                tableHtml += '<input type="text" class="form-control skuBarcode" id="SkuInfoList_' + skuNum + '__BarCode" name="SkuInfoList[' + skuNum + '].BarCode" data-key-id="skuBarcode_' + colorElement.val + '_' + sizeArr[i].val + '" />';
                 tableHtml += '</td>';
                 tableHtml += '<td>';
-                tableHtml += '<input type="number" class="form-control skuSort" min="0" id="SkuInfoList_' + skuNum + '__Sort" name="SkuInfoList[' + skuNum + '].Sort" data-key-id="skuSort_' + colorElement.val + '_' + sizeArr[i].val +'" />';
+                tableHtml += '<input type="number" class="form-control skuSort" min="0" id="SkuInfoList_' + skuNum + '__Sort" name="SkuInfoList[' + skuNum + '].Sort" data-key-id="skuSort_' + colorElement.val + '_' + sizeArr[i].val + '" />';
                 tableHtml += '</td>';
                 tableHtml += '</tr>';
                 skuNum++;
             }
+
         });
-        skuTable.html(tableHtml);
-        //绑定验证
-        $('.skuPrice').rules("remove");
-        $('.skuPrice').rules("add", {
-            required: true,
-            number: true,
-            min: 0.01,
-            messages: {
-                required: "金额不能为空",
-                number: "金额必须是数字",
-                min: "金额不能小于或等于0"
-            }
-        });
-        //绑定input改变事件
-        skuTable.find('.skuPrice,.skuBarcode,.skuSort').bind('keyup', function () {
-            setSkuAttr(this);
-        });
-        $('#skuInfoNum').val(skuNum);
-        getSkuAttr();
     }
+    skuTable.html(tableHtml);
+    //绑定验证
+    $('.skuPrice').rules("remove");
+    $('.skuPrice').rules("add", {
+        required: true,
+        number: true,
+        min: 0,
+        messages: {
+            required: "金额不能为空",
+            number: "金额必须是数字",
+            min: "金额不能小于0"
+        }
+    });
+
+    //给SKU添加默认值
+    var retailPrice = $('#RetailPrice').val();
+    $('.skuPrice').each(function () {
+        $(this).val(Number(retailPrice));
+        setSkuAttr(this);
+    })
+    //绑定input改变事件
+    skuTable.find('.skuPrice,.skuBarcode,.skuSort').bind('keyup', function () {
+        setSkuAttr(this);
+    });
+    $('#skuInfoNum').val(skuNum);
+    getSkuAttr();
 }
 
 function uniqueArr(arr) {
@@ -178,14 +199,14 @@ function uniqueArr(arr) {
     return result;
 }
 /**
- * 组合新的颜色选项
+ * 对增加的组件进行初始化(增加的时候使用)
  * @param {颜色group} obj 
  * @param {序号} index 
  */
-function combination(obj ,index){
+function combination(obj, index) {
     //checkbox初始化
     var ids = "SkuColorPic_" + index + "__";
-    var names = "SkuColorPic[" + index+"].";
+    var names = "SkuColorPic[" + index + "].";
     obj.find("input[type=checkbox]")
         .attr('name', names + 'IsChecked')
         .attr('id', ids + 'IsChecked')
@@ -197,12 +218,13 @@ function combination(obj ,index){
         .val(-1);
     //文件上传框初始化
     obj.find("input[type=file]").val("")
-        .attr('id', ids + 'PicFile')
-        .attr('name', names + 'PicFile')
-        .next().attr('for', ids + 'PicFile');
+        .prop('disabled', false)
+        .bind("change", function () {
+            window.uploadFiles(this);
+        });
     obj.find("label.custom-file-label").text("选择文件");
     //隐藏表单域初始化
-    obj.find('input[type=hidden]')
+    obj.find('input[type=hidden]').val("")
         .attr('id', ids + 'PicUrl')
         .attr('name', names + 'PicUrl');
 
@@ -211,22 +233,44 @@ function combination(obj ,index){
     obj.find(".delColorGroup").bind("click", function () {
         window.delColorGroup(this);
     });
-    //上传按钮
-    obj.find(".uploadFiles").bind("click", function () {
-        window.uploadFiles(this);
-    }).siblings("input[type=hidden]").val("");
 
     //图片
-    obj.find("img").hide();
+    obj.find("img").attr("src", "").hide();
 
     //checkbox改变事件
     obj.find('.cbxColor').bind("change", function () {
         colorChecked(false);
     }).prop('checked', false);
+
     obj.find("select").bind("change", function () {
         return optionSelected(this);
     });
+
     return obj;
+}
+
+/**
+ * 删除时对现有的组件进行重组
+ * @param {any} obj
+ * @param {any} index
+ */
+function recombination(obj, index) {
+    //名称初始化
+    var ids = "SkuColorPic_" + index + "__";
+    var names = "SkuColorPic[" + index + "].";
+    //复选框
+    obj.find("input[type=checkbox]")
+        .attr('name', names + 'IsChecked')
+        .attr('id', ids + 'IsChecked')
+        .next().attr('for', ids + 'IsChecked');
+    //下拉菜单
+    obj.find("select")
+        .attr('id', ids + 'ColorId')
+        .attr('name', names + 'ColorId');
+    //隐藏表单域
+    obj.find('input[type=hidden]')
+        .attr('id', ids + 'PicUrl')
+        .attr('name', names + 'PicUrl');
 }
 
 /**
@@ -234,17 +278,36 @@ function combination(obj ,index){
  * @param {any} filePath
  * @param {any} fileName
  */
-function prodPicList(filePath,fileName,index) {
+function prodPicList(filePath, fileName, index) {
     var html = '<div class="col-sm-2">';
-    html += '<a href="' + filePath + '" data-toggle="lightbox" data-title="' + fileName+'" data-gallery="gallery">';
-    html += '<img src = "' + filePath + '" class="img-fluid mb-2" alt = "' + fileName+'" />';
-    html += '<input type="hidden" id="ProductPics_' + index +'__PicUrl" name="ProductPics[' + index+'].PicUrl" value = "' + filePath + '" />';
-    html += '<input type="hidden" id="ProductPics_' + index + '__PicDesc" name="ProductPics[' + index + '].PicDesc" value = "' + fileName + '" />';
+    html += '<a href="' + filePath + '" data-toggle="lightbox" data-title="' + fileName + '" data-gallery="gallery">';
+    html += '<img src = "' + filePath + '" class="img-fluid mb-2" alt = "' + fileName + '" />';
+    html += '<input type="hidden" class="picUrl" id="ProductPics_' + index + '__PicUrl" name="ProductPics[' + index + '].PicUrl" value = "' + filePath + '" />';
+    html += '<input type="hidden" class="picDesc" id="ProductPics_' + index + '__PicDesc" name="ProductPics[' + index + '].PicDesc" value = "' + fileName + '" />';
     html += '</a >';
+    html += '<button class="btn btn-block btn-default btn-xs delProdPic" type="button" >删除</button>';
     html += '</div>';
     return html;
 }
 
+/**
+ * 删除和重组图片组件
+ * */
+window.delProdPic = function delProdPic(obj) {
+    $(obj).parent().fadeOut("fast", function () {
+        //选择除了自己以外的所有同辈元素下的a标记
+        var thisPic = $(this).siblings().children("a");
+        thisPic.each(function (i, e) {
+            var newId = "ProductPics_" + i + "__";
+            var newName = "ProductPics[" + i + "].";
+            $(e).children(".picUrl").attr("id", newId + "PicUrl").attr("name", newName + "PicUrl");
+            $(e).children(".picDesc").attr("id", newId + "PicDesc").attr("name", newName + "PicDesc");
+            $(e).children(".picSort").attr("id", newId + "Sort").attr("name", newName + "Sort");
+        });
+        $('#prodPicsNum').val(thisPic.length);
+        this.remove();
+    });
+}
 
 function loadColorValidate() {
     $('.hidSkuColorPic').rules("add", {
@@ -270,20 +333,29 @@ window.pageLoadSkuAttr = function pageLoadSkuAttr() {
     var skuPrice = $("#skuInfoTable .skuPrice");
     var skuBarcode = $("#skuInfoTable .skuBarcode");
     var skuSort = $("#skuInfoTable .skuSort");
+    //skuID
+    var skuId = $("#skuInfoTable .skuId");
+    //产品ID
+    var prodId = $("#Id").val();
 
-    if (skuPrice.length == 0 || skuBarcode.length == 0 || skuSort.length == 0) {
-        localStorage.clear();
-    }
-
+    localStorage.clear();
+    //记录sku价格信息
     skuPrice.each(function (i, e) {
         var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
+    //记录sku编码信息
     skuBarcode.each(function (i, e) {
         var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
+    //记录sku排序信息
     skuSort.each(function (i, e) {
+        var key = $(e).attr("data-key-id");
+        localStorage.setItem(key, $(e).val());
+    });
+    //记录产品的SKUID
+    skuId.each(function (i, e) {
         var key = $(e).attr("data-key-id");
         localStorage.setItem(key, $(e).val());
     });
@@ -319,7 +391,7 @@ window.setSkuAttr = function setSkuAttr(obj) {
 window.skuSizeTab = function skuSizeTab() {
     $("#sku-size-tab li a").on("click", function (e) {
         var sizeActive = $('#sizeInfoTab .active input[type=checkbox]:checked');
-        if (sizeActive.length > 0) {
+        if (sizeActive.length > 0 && !$(this).hasClass("active")) {
             if (confirm("切换尺码分组将会丢失勾选的尺码及 sku 数据，确定切换？")) {
                 $('#sizeInfoTab input[type=checkbox]:checked').prop('checked', false);
                 sizeChecked(false);
@@ -331,7 +403,7 @@ window.skuSizeTab = function skuSizeTab() {
             return true;
         }
     });
-} 
+}
 
 window.delColorGroup = delColorGroup;
 window.colorChecked = colorChecked;
